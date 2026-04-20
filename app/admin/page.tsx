@@ -129,7 +129,7 @@ export default async function AdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {users.map((u) => (
+                {users.map((u: any) => (
                   <tr key={u.id} className="text-slate-200">
                     <td className="px-6 py-4 font-medium">{u.name}</td>
                     <td className="px-6 py-4 text-slate-400">{u.email}</td>
