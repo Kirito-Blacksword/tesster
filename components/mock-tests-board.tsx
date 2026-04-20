@@ -16,7 +16,6 @@ const filters: Array<{ label: string; value: "all" | MockTestStatus }> = [
   { label: "Not Attempted", value: "not_attempted" },
   { label: "Attempted", value: "attempted" },
   { label: "Upcoming", value: "upcoming" },
-  { label: "Resume", value: "resume" },
 ];
 
 export function MockTestsBoard({ 

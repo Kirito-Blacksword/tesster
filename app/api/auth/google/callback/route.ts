@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { encrypt } from "@/lib/auth";
-import { cookies } from "next/headers";
 
 export async function GET(request: Request) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -75,17 +74,21 @@ export async function GET(request: Request) {
 
     // 4. Create internal session
     const sessionData = await encrypt({ id: user.id, email: user.email, name: user.name, role: user.role, phone: user.phone, allAccess: user.allAccess, premiumExamIds: user.premiumExamIds ? JSON.parse(user.premiumExamIds) : [] });
-    const cookieStore = await cookies();
-    cookieStore.set("auth_session", sessionData, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: "/",
-    });
 
     // If new Google user has no phone, collect it before going to dashboard
     const destination = !user.phone ? "/onboarding/phone" : "/dashboard";
-    return NextResponse.redirect(new URL(destination, request.url));
+    const response = NextResponse.redirect(new URL(destination, request.url));
+
+    // Set cookie directly on the response so it's included in the redirect
+    response.cookies.set("auth_session", sessionData, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+      sameSite: "lax",
+    });
+
+    return response;
   } catch (error) {
     console.error("Google Auth Error:", error);
     return NextResponse.redirect(new URL("/login?error=AuthenticationFailed", request.url));

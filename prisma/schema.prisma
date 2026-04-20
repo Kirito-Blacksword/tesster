@@ -13,6 +13,7 @@ model User {
   password  String?
   name      String
   phone     String?
+  primaryGoal String?
   role      String   @default("STUDENT")
   googleId  String?  @unique
   allAccess Boolean  @default(false)

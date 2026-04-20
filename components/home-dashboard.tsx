@@ -8,12 +8,27 @@ import { firstName, useAuth } from "@/components/auth-context";
 import { examConfigs, type ExamId } from "@/lib/exams";
 import { useUserAttempts } from "@/hooks/use-user-attempts";
 import { computeQuickAnalysisFromAttempts } from "@/lib/user-attempts";
-
 export function HomeDashboard({ activeExamId }: { activeExamId: ExamId }) {
   const { user, hasPremiumForExam } = useAuth();
   const hasPremium = hasPremiumForExam(activeExamId);
   const { attempts } = useUserAttempts();
   const activeExam = examConfigs[activeExamId];
+
+  // All exams the user does NOT have premium for yet
+  const lockedExams = useMemo(() =>
+    Object.values(examConfigs).filter(
+      (e) => !hasPremiumForExam(e.id as ExamId) && !user?.allAccess
+    ),
+    [user]
+  );
+
+  // Exams the user already has premium for
+  const unlockedExams = useMemo(() =>
+    Object.values(examConfigs).filter(
+      (e) => hasPremiumForExam(e.id as ExamId) || user?.allAccess
+    ),
+    [user]
+  );
 
   const quickAnalysis = useMemo(
     () => computeQuickAnalysisFromAttempts(activeExamId, attempts),
@@ -49,37 +64,64 @@ export function HomeDashboard({ activeExamId }: { activeExamId: ExamId }) {
         <div className="overflow-hidden rounded-[32px] border border-[#2c2109] bg-[radial-gradient(circle_at_top_right,rgba(255,184,77,0.34),transparent_28%),linear-gradient(120deg,#130a07,#1c1008_50%,#2d1a06)] p-8">
           <div className="max-w-2xl">
             <p className="text-sm uppercase tracking-[0.34em] text-amber-300">Tesster Premium</p>
-            <h2 className="mt-5 font-[family-name:var(--font-display)] text-5xl font-semibold tracking-tight text-white">
-              {hasPremium                ? `Your ${activeExam.name} premium pack is active.`
-                : "Unlock every mock after Full Test 1."}
-            </h2>
-            <p className="mt-4 text-lg text-amber-50/80">
-              {hasPremium
-                ? "Open any premium-tagged paper from Mock tests—no more locks for this exam."
-                : "Free tier includes Full Test 1 per exam. Premium unlocks the rest of the library for this exam; all-access unlocks every exam."}
-            </p>
-            {latestAttempt ? (
-              <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-amber-50/85">
-                <span>
-                  {hasPremium ? `${activeExam.name} premium active` : `${activeExam.name} · upgrade for more mocks`}
-                </span>
-                <span className="text-amber-200/70">
-                  Latest score {latestAttempt.score}/{latestAttempt.maxScore}
-                </span>
-              </div>
+
+            {user?.allAccess ? (
+              <>
+                <h2 className="mt-5 font-[family-name:var(--font-display)] text-5xl font-semibold tracking-tight text-white">
+                  All-Access pass active.
+                </h2>
+                <p className="mt-4 text-lg text-amber-50/80">
+                  Every mock across JEE, BITSAT, COMEDK, and KCET is unlocked for you.
+                </p>
+              </>
+            ) : unlockedExams.length > 0 ? (
+              <>
+                <h2 className="mt-5 font-[family-name:var(--font-display)] text-5xl font-semibold tracking-tight text-white">
+                  {unlockedExams.length === 1
+                    ? `Your ${unlockedExams[0].name} premium pack is active.`
+                    : `${unlockedExams.map(e => e.name).join(", ")} packs active.`}
+                </h2>
+                <p className="mt-4 text-lg text-amber-50/80">
+                  Open any premium-tagged paper for your unlocked exams.
+                  {lockedExams.length > 0 && ` Upgrade to unlock ${lockedExams.map(e => e.name).join(", ")}.`}
+                </p>
+              </>
             ) : (
-              <p className="mt-6 text-sm text-amber-200/80">Finish a mock to see your latest score here.</p>
+              <>
+                <h2 className="mt-5 font-[family-name:var(--font-display)] text-5xl font-semibold tracking-tight text-white">
+                  Unlock every mock after Full Test 1.
+                </h2>
+                <p className="mt-4 text-lg text-amber-50/80">
+                  Free tier includes Full Test 1 per exam. Buy a single exam pack or go all-access for every exam.
+                </p>
+              </>
             )}
+
+            {latestAttempt && (
+              <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-amber-50/85">
+                <span>Latest score {latestAttempt.score}/{latestAttempt.maxScore}</span>
+              </div>
+            )}
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href={hasPremium ? (`/mock-tests?exam=${activeExamId}` as Route) : (`/pricing?exam=${activeExamId}` as Route)}
+                href={`/mock-tests?exam=${activeExamId}` as Route}
                 className="inline-flex items-center justify-center rounded-full bg-yellow-400 px-6 py-3 text-base font-semibold text-slate-950 transition hover:brightness-105"
               >
-                {hasPremium ? "Go to mock tests" : "Get premium"}
+                Go to mock tests
               </Link>
+              {/* Show upgrade option if they don't have all-access and there are locked exams */}
+              {!user?.allAccess && lockedExams.length > 0 && (
+                <Link
+                  href={`/pricing?exam=${lockedExams[0].id}` as Route}
+                  className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 px-6 py-3 text-base font-medium text-amber-100 transition hover:bg-amber-500/20"
+                >
+                  {unlockedExams.length > 0 ? `Unlock ${lockedExams[0].name}` : "Get premium"}
+                </Link>
+              )}
               <Link
                 href={"/results?exam=jee&demo=1" as Route}
-                className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 px-6 py-3 text-base font-medium text-amber-100 transition hover:bg-amber-500/20"
+                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3 text-base font-medium text-amber-100 transition hover:bg-white/10"
               >
                 See example analysis
               </Link>

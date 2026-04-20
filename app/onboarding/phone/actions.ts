@@ -5,19 +5,20 @@ import { redirect } from "next/navigation";
 import { getSession, encrypt } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function savePhone(state: any, formData: FormData) {
+export async function savePhoneAndGoal(state: any, formData: FormData) {
   const session = await getSession();
   if (!session) redirect("/login");
 
   const phone = (formData.get("phone") as string)?.trim();
+  const primaryGoal = (formData.get("primaryGoal") as string)?.trim() || "jee";
+
   if (!phone) return { error: "Phone number is required" };
 
   await prisma.user.update({
     where: { id: session.id },
-    data: { phone },
+    data: { phone, primaryGoal },
   });
 
-  // Re-issue session with phone included
   const updated = await prisma.user.findUnique({ where: { id: session.id } });
   if (!updated) redirect("/login");
 
@@ -27,6 +28,7 @@ export async function savePhone(state: any, formData: FormData) {
     name: updated.name,
     role: updated.role,
     phone: updated.phone,
+    primaryGoal: updated.primaryGoal,
     allAccess: updated.allAccess,
     premiumExamIds: updated.premiumExamIds ? JSON.parse(updated.premiumExamIds) : [],
   });
@@ -39,9 +41,5 @@ export async function savePhone(state: any, formData: FormData) {
     path: "/",
   });
 
-  redirect("/dashboard");
-}
-
-export async function skipPhone() {
   redirect("/dashboard");
 }

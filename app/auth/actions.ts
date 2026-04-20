@@ -11,6 +11,7 @@ export async function registerStudent(state: any, formData: FormData) {
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
   const phone = (formData.get("phone") as string)?.trim() || null;
+  const primaryGoal = (formData.get("primaryGoal") as string)?.trim() || "jee";
 
   if (!email || !password || !name) {
     return { error: "Name, email and password are required" };
@@ -28,6 +29,7 @@ export async function registerStudent(state: any, formData: FormData) {
       email,
       name,
       phone,
+      primaryGoal,
       password: hashedPassword,
       role: "STUDENT",
     },

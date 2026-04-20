@@ -76,6 +76,22 @@ export default function RegisterPage() {
               <input name="password" type="password" autoComplete="new-password" required placeholder="••••••••"
                 className="mt-2 block w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand" />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Primary exam goal</label>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {[
+                  { id: "jee", name: "JEE Main" },
+                  { id: "bitsat", name: "BITSAT" },
+                  { id: "comedk", name: "COMEDK" },
+                  { id: "kcet", name: "KCET" },
+                ].map((exam) => (
+                  <label key={exam.id} className="relative flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 transition has-[:checked]:border-brand has-[:checked]:bg-brand/10">
+                    <input type="radio" name="primaryGoal" value={exam.id} defaultChecked={exam.id === "jee"} className="h-3.5 w-3.5 accent-brand" />
+                    <span className="text-sm font-medium text-white">{exam.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
           {state?.error && (
