@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface: 247 248 250;
+  --panel: 255 255 255;
+  --ink: 15 23 42;
+  --muted: 100 116 139;
+  --line: 226 232 240;
+  --brand: 14 116 144;
+  --accent: 245 158 11;
+}
+
+.dark {
+  --surface: 17 22 31;
+  --panel: 22 29 40;
+  --ink: 241 245 249;
+  --muted: 148 163 184;
+  --line: 48 58 74;
+  --brand: 151 138 251;
+  --accent: 253 186 116;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--ink));
+  background:
+    radial-gradient(circle at top, rgba(155, 138, 251, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(109, 211, 199, 0.08), transparent 28%),
+    rgb(var(--surface));
+  min-height: 100vh;
+}
+
+* {
+  border-color: rgb(var(--line));
+}
+
+.official-panel {
+  @apply rounded-[28px] border border-line/80 bg-panel/90 shadow-soft backdrop-blur;
+}
+
+.palette-grid {
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+}

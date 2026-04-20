@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  name      String
+  phone     String?
+  role      String   @default("STUDENT")
+  googleId  String?  @unique
+  allAccess Boolean  @default(false)
+  premiumExamIds String @default("[]")
+  results   Result[]
+  createdAt DateTime @default(now())
+}
+
+model Result {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examId          String
+  examName        String
+  score           Int
+  maxScore        Int
+  payload         String   // JSON string of ResultPayload
+  createdAt       DateTime @default(now())
+}
+
+model CustomExam {
+  id               String           @id @default(uuid())
+  name             String
+  durationMinutes  Int
+  maxMarks         Int
+  cardDetails      String
+  scoringCorrect   Int
+  scoringIncorrect Int
+  instructions     String           // JSON string array
+  paletteLegend    String           // JSON string array
+  baseExamId       String?          // To track which pattern this is based on
+  isPremium        Boolean          @default(false)
+  category         String?
+  section          String?
+  published        Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  questions        CustomQuestion[]
+}
+
+model ExamLayout {
+  examId    String   @id
+  title     String
+  groups    String   // JSON string representing the array of categories and sections
+  updatedAt DateTime @updatedAt
+}
+
+model CustomQuestion {
+  id            String     @id @default(uuid())
+  index         Int
+  section       String
+  subject       String
+  type          String     // "mcq" | "numerical"
+  text          String
+  options       String?    // JSON string array of { text, image? }
+  correctAnswer String
+  explanation   String
+  image         String?
+  isBonus       Boolean    @default(false)
+  examId        String
+  exam          CustomExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+}

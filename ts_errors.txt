@@ -1,0 +1,27 @@
+app/admin/page.tsx(34,42): error TS2322: Type '"/admin/tests/new"' is not assignable to type 'UrlObject | RouteImpl<"/admin/tests/new">'.
+app/admin/tests/new/page.tsx(136,21): error TS2345: Argument of type '"/admin"' is not assignable to parameter of type 'RouteImpl<"/admin">'.
+app/api/exams/[id]/route.ts(13,5): error TS2322: Type 'ExamConfig | undefined' is not assignable to type 'ExamConfig'.
+  Type 'undefined' is not assignable to type 'ExamConfig'.
+app/exam/[examId]/page.tsx(18,5): error TS2322: Type 'ExamConfig | undefined' is not assignable to type 'ExamConfig'.
+  Type 'undefined' is not assignable to type 'ExamConfig'.
+components/admin-login-form.tsx(7,57): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(action: (state: { error: string; } | undefined) => { error: string; } | Promise<{ error: string; } | undefined> | undefined, initialState: { error: string; } | undefined, permalink?: string | undefined): [state: ...]', gave the following error.
+    Argument of type '(formData: FormData) => Promise<{ error: string; }>' is not assignable to parameter of type '(state: { error: string; } | undefined) => { error: string; } | Promise<{ error: string; } | undefined> | undefined'.
+      Types of parameters 'formData' and 'state' are incompatible.
+        Type '{ error: string; } | undefined' is not assignable to type 'FormData'.
+          Type 'undefined' is not assignable to type 'FormData'.
+  Overload 2 of 2, '(action: (state: { error: string; } | undefined, payload: unknown) => { error: string; } | Promise<{ error: string; } | undefined> | undefined, initialState: { error: string; } | undefined, permalink?: string | undefined): [state: ...]', gave the following error.
+    Argument of type '(formData: FormData) => Promise<{ error: string; }>' is not assignable to parameter of type '(state: { error: string; } | undefined, payload: unknown) => { error: string; } | Promise<{ error: string; } | undefined> | undefined'.
+      Types of parameters 'formData' and 'state' are incompatible.
+        Type '{ error: string; } | undefined' is not assignable to type 'FormData'.
+          Type 'undefined' is not assignable to type 'FormData'.
+components/result-center.tsx(67,36): error TS2304: Cannot find name 'ExamConfig'.
+components/result-center.tsx(459,56): error TS7006: Parameter 'q' implicitly has an 'any' type.
+components/result-center.tsx(460,64): error TS7006: Parameter 'o' implicitly has an 'any' type.
+components/result-center.tsx(461,65): error TS7006: Parameter 'o' implicitly has an 'any' type.
+lib/example-result.ts(41,9): error TS2322: Type '({ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus: boolean | undefined; text: string; selectedAnswer: null; correctAnswer: string; explanation: string; status: QuestionStatus; isCorrect: false; timeSpent: number; } | { ...; })[]' is not assignable to type '{ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus?: boolean | undefined; text: string; selectedAnswer: string | null; correctAnswer: string; explanation: string; status: QuestionStatus; isCorrect: boolean; timeSpent: number; }[]'.
+  Type '{ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus: boolean | undefined; text: string; selectedAnswer: null; correctAnswer: string; explanation: string; status: QuestionStatus; isCorrect: false; timeSpent: number; } | { ...; }' is not assignable to type '{ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus?: boolean | undefined; text: string; selectedAnswer: string | null; correctAnswer: string; explanation: string; status: QuestionStatus; isCorrect: boolean; timeSpent: number; }'.
+    Type '{ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus: boolean | undefined; text: string; selectedAnswer: string | { text: string; image?: string; }; ... 4 more ...; timeSpent: number; }' is not assignable to type '{ id: string; index: number; section: string; subject: string; type: QuestionType; isBonus?: boolean | undefined; text: string; selectedAnswer: string | null; correctAnswer: string; explanation: string; status: QuestionStatus; isCorrect: boolean; timeSpent: number; }'.
+      Types of property 'selectedAnswer' are incompatible.
+        Type 'string | { text: string; image?: string | undefined; }' is not assignable to type 'string | null'.
+          Type '{ text: string; image?: string | undefined; }' is not assignable to type 'string'.
