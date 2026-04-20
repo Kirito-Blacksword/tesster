@@ -1,30 +1,26 @@
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@prisma/client";
 import type { ExamConfig } from "@/lib/exams";
 
-type CustomExamWithQuestions = Prisma.CustomExamGetPayload<{
-  include: { questions: true };
-}>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type CustomExamRow = any;
 
-type CustomQuestion = Prisma.CustomQuestionGetPayload<Record<string, never>>;
-
-function mapQuestion(q: CustomQuestion) {
+function mapQuestion(q: CustomExamRow) {
   return {
-    id: q.id,
-    index: q.index,
-    section: q.section,
-    subject: q.subject,
+    id: q.id as string,
+    index: q.index as number,
+    section: q.section as string,
+    subject: q.subject as string,
     type: q.type as "mcq" | "numerical",
-    text: q.text,
-    options: q.options ? JSON.parse(q.options) : undefined,
-    correctAnswer: q.correctAnswer,
-    explanation: q.explanation,
-    image: q.image ?? undefined,
-    isBonus: q.isBonus,
+    text: q.text as string,
+    options: q.options ? JSON.parse(q.options as string) : undefined,
+    correctAnswer: q.correctAnswer as string,
+    explanation: q.explanation as string,
+    image: (q.image as string | null) ?? undefined,
+    isBonus: q.isBonus as boolean,
   };
 }
 
-function mapExam(customExam: CustomExamWithQuestions): ExamConfig {
+function mapExam(customExam: CustomExamRow): ExamConfig {
   return {
     id: customExam.id,
     name: customExam.name,
@@ -41,7 +37,7 @@ function mapExam(customExam: CustomExamWithQuestions): ExamConfig {
     section: customExam.section ?? undefined,
     instructions: JSON.parse(customExam.instructions),
     paletteLegend: JSON.parse(customExam.paletteLegend),
-    questions: customExam.questions.map(mapQuestion),
+    questions: (customExam.questions ?? []).map(mapQuestion),
   };
 }
 
@@ -68,5 +64,5 @@ export async function getAllCustomExamsAdmin() {
     include: { questions: { orderBy: { index: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
-  return exams.map((e) => ({ ...mapExam(e), published: e.published }));
+  return exams.map((e: CustomExamRow) => ({ ...mapExam(e), published: e.published as boolean }));
 }
