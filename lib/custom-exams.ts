@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/db";
-import type { CustomExam, CustomQuestion } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import type { ExamConfig } from "@/lib/exams";
 
-type CustomExamWithQuestions = CustomExam & { questions: CustomQuestion[] };
+type CustomExamWithQuestions = Prisma.CustomExamGetPayload<{
+  include: { questions: true };
+}>;
+
+type CustomQuestion = Prisma.CustomQuestionGetPayload<Record<string, never>>;
 
 function mapQuestion(q: CustomQuestion) {
   return {
